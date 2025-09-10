@@ -1,4 +1,3 @@
-# import tempfile
 import os
 import csv
 import datetime
@@ -97,8 +96,7 @@ def tune_and_benchmark(
     mod = sch.mod
     func = tvm.build(mod, target=target)
     dev = tvm.device(target.kind.name, 0)
-
-    # 构造输入
+    
     N, C, H, W, K, _cpg, R, S, _kpg, stride, padding, dilation, groups = shape
     A_shape = (N, C, H, W)
     B_shape = (K, C, R, S)
