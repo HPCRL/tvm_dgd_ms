@@ -50,7 +50,6 @@ shapes_b1 = [
 ]
 
 def make_prim_from_shape(shape, layout="nchw", dtype="float32"):
-    # 形状解包（忽略占位的下划线位）
     N, C, H, W, K, _cpg, R, S, _kpg, stride, padding, dilation, groups = shape
     A, B, Conv = conv2d_nchw(N, H, W, C, K, R, S, stride, padding, dilation, dtype, dtype)
     return tvm.te.create_prim_func([A, B, Conv])
@@ -85,7 +84,7 @@ def tune_and_benchmark(
         mod=prim,
         target=target,
         work_dir=unique_work_dir,
-        max_trials_global=max_trials_global,  # 可按需调大
+        max_trials_global=max_trials_global,
         num_trials_per_iter=num_trials_per_iter,
         runner=ms.runner.LocalRunner(
             evaluator_config=ms.runner.EvaluatorConfig(number=1, repeat=10, min_repeat_ms=10)
@@ -117,13 +116,11 @@ def tune_and_benchmark(
     return func, mean_s * 1e3  # ms
 
 if __name__ == "__main__":
-    # 配置CSV结果目录与文件
     results_dir = "results"
     os.makedirs(results_dir, exist_ok=True)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     csv_filename = os.path.join(results_dir, f"conv2d_results_{timestamp}.csv")
 
-    # 固定配置
     layout = "nchw"
     in_dtype = "float32"
     out_dtype = "float32"
